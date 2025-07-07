@@ -14,6 +14,8 @@ services:
     depends_on:
       - backend
       - client
+    ports:
+      - "7700:80"
 
   clickhouse:
     container_name: clickhouse
