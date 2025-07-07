@@ -1,9 +1,4 @@
-{
-    # Turn off automatic HTTPS globally since Cloudflare terminates TLS
-    auto_https off
-}
-
-{$DOMAIN_NAME} {
+http://{$DOMAIN_NAME} {
     # Enable compression
     encode zstd gzip
 
