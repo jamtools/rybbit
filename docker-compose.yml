@@ -4,10 +4,6 @@ services:
     image: caddy:2.10.0
     container_name: caddy
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp" # Needed for HTTP/3
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile # Mount Caddy config file
       - caddy_data:/data # Mount persistent data volume for certs etc.
@@ -19,6 +15,8 @@ services:
     depends_on:
       - backend
       - client
+    ports:
+      - "7700:80"
 
   clickhouse:
     container_name: clickhouse
@@ -73,8 +71,8 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
-    ports:
-      - "${HOST_BACKEND_PORT:-127.0.0.1:3001:3001}"
+    # ports:
+    #   - "${HOST_BACKEND_PORT:-127.0.0.1:3001:3001}"
     environment:
       - NODE_ENV=production
       - CLICKHOUSE_HOST=http://clickhouse:8123
@@ -90,6 +88,7 @@ services:
       - DISABLE_SIGNUP=${DISABLE_SIGNUP}
       - DISABLE_TELEMETRY=${DISABLE_TELEMETRY}
       - MAPBOX_TOKEN=${MAPBOX_TOKEN}
+      - RESEND_API_KEY=${RESEND_API_KEY}
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -112,8 +111,8 @@ services:
       args:
         NEXT_PUBLIC_BACKEND_URL: ${BASE_URL}
         NEXT_PUBLIC_DISABLE_SIGNUP: ${DISABLE_SIGNUP}
-    ports:
-      - "${HOST_CLIENT_PORT:-127.0.0.1:3002:3002}"
+    # ports:
+    #   - "${HOST_CLIENT_PORT:-127.0.0.1:3002:3002}"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_BACKEND_URL=${BASE_URL}
